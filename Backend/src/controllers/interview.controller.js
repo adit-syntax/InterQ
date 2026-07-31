@@ -6,44 +6,49 @@ const interviewReportModel = require("../models/interviewReport.model")
  * @description Controller to generate interview report based on user self description, resume and job description.
  */
 async function generateInterViewReportController(req, res) {
+    try {
+        let resumeText = ""
+        if (req.file) {
+            console.log("📄 [Backend] Parsing uploaded resume PDF...")
+            const resumeContent = await pdfParse(req.file.buffer)
+            resumeText = resumeContent.text
+        }
 
-    let resumeText = ""
-    if (req.file) {
-        console.log("📄 [Backend] Parsing uploaded resume PDF...")
-        const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
-        resumeText = resumeContent.text
+        const { selfDescription, jobDescription, questionCount } = req.body
+
+        const count = parseInt(questionCount) || 5
+
+        console.log(`🤖 [Backend] Requesting Gemini AI to generate strategy & ${count} questions...`)
+
+        const interViewReportByAi = await generateInterviewReport({
+            resume: resumeText,
+            selfDescription,
+            jobDescription,
+            questionCount: count
+        })
+
+        console.log("💾 [Backend] Saving generated interview report to MongoDB...")
+
+        const interviewReport = await interviewReportModel.create({
+            user: req.user.id,
+            resume: resumeText,
+            selfDescription,
+            jobDescription,
+            ...interViewReportByAi
+        })
+
+        console.log("✨ [Backend] Interview report generated successfully!")
+
+        res.status(201).json({
+            message: "Interview report generated successfully.",
+            interviewReport
+        })
+    } catch (error) {
+        console.error("❌ [Backend] Error generating interview report:", error)
+        res.status(500).json({
+            message: error.message || "Failed to generate interview report. Please try again."
+        })
     }
-
-    const { selfDescription, jobDescription, questionCount } = req.body
-
-    const count = parseInt(questionCount) || 5
-
-    console.log(`🤖 [Backend] Requesting Gemini AI to generate strategy & ${count} questions...`)
-
-    const interViewReportByAi = await generateInterviewReport({
-        resume: resumeText,
-        selfDescription,
-        jobDescription,
-        questionCount: count
-    })
-
-    console.log("💾 [Backend] Saving generated interview report to MongoDB...")
-
-    const interviewReport = await interviewReportModel.create({
-        user: req.user.id,
-        resume: resumeText,
-        selfDescription,
-        jobDescription,
-        ...interViewReportByAi
-    })
-
-    console.log("✨ [Backend] Interview report generated successfully!")
-
-    res.status(201).json({
-        message: "Interview report generated successfully.",
-        interviewReport
-    })
-
 }
 
 /**

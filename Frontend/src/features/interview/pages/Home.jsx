@@ -30,12 +30,20 @@ const Home = () => {
     }
 
     const [ questionCount, setQuestionCount ] = useState(5)
+    const [ errorMsg, setErrorMsg ] = useState("")
 
     const handleGenerateReport = async () => {
+        setErrorMsg("")
         const resumeFile = selectedFile || resumeInputRef.current?.files[0]
-        const data = await generateReport({ jobDescription, selfDescription, resumeFile, questionCount })
-        if (data?._id) {
-            navigate(`/interview/${data._id}`)
+        try {
+            const data = await generateReport({ jobDescription, selfDescription, resumeFile, questionCount })
+            if (data?._id) {
+                navigate(`/interview/${data._id}`)
+            } else {
+                setErrorMsg("Failed to generate report. Please try again.")
+            }
+        } catch (err) {
+            setErrorMsg(err.message || "An error occurred while generating your interview plan.")
         }
     }
 
@@ -182,6 +190,7 @@ const Home = () => {
                         </select>
                     </div>
 
+                    {errorMsg && <div className='error-banner' style={{ color: '#ff2d78', background: 'rgba(255, 45, 120, 0.1)', padding: '0.75rem 1rem', borderRadius: '0.5rem', marginBottom: '1rem', border: '1px solid rgba(255, 45, 120, 0.3)', fontSize: '0.9rem' }}>{errorMsg}</div>}
                     <button
                         onClick={handleGenerateReport}
                         className='generate-btn'>
