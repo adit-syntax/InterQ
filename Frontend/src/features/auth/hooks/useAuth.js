@@ -20,8 +20,9 @@ export const useAuth = () => {
             if (data?.user) {
                 setUser(data.user)
             }
+            return { success: true, user: data?.user }
         } catch (err) {
-            console.log(err)
+            return { success: false, error: err.message || "Invalid email or password" }
         } finally {
             setLoading(false)
         }
@@ -37,8 +38,9 @@ export const useAuth = () => {
             if (data?.user) {
                 setUser(data.user)
             }
+            return { success: true, user: data?.user }
         } catch (err) {
-            console.log(err)
+            return { success: false, error: err.message || "Registration failed" }
         } finally {
             setLoading(false)
         }
