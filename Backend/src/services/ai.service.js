@@ -55,6 +55,7 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
                 model: "gemini-flash-latest",
                 contents: prompt,
                 config: {
+                    temperature: 0.1,
                     responseMimeType: "application/json",
                     responseSchema: zodToJsonSchema(interviewReportSchema),
                 }
@@ -72,6 +73,7 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
             model: "gemini-flash-latest",
             contents: prompt,
             config: {
+                temperature: 0.1,
                 responseMimeType: "application/json",
                 responseSchema: zodToJsonSchema(interviewReportSchema),
             }
