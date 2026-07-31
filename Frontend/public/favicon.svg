@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="qGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff2d78" />
+      <stop offset="100%" stop-color="#00f2fe" />
+    </linearGradient>
+    <filter id="qGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <rect width="100" height="100" rx="26" fill="#0d1117"/>
+  <!-- Q Letter Circle -->
+  <circle cx="48" cy="46" r="24" stroke="url(#qGrad)" stroke-width="8" fill="none" filter="url(#qGlow)"/>
+  <!-- Q Tail Spark -->
+  <path d="M58 56 L76 74" stroke="url(#qGrad)" stroke-width="8" stroke-linecap="round" filter="url(#qGlow)"/>
+  <circle cx="76" cy="74" r="3" fill="#00f2fe"/>
+</svg>
