@@ -15,6 +15,7 @@ async function generateInterViewReportController(req, res) {
         }
 
         const { selfDescription, jobDescription, questionCount } = req.body
+        const customApiKey = req.headers["x-gemini-api-key"] || req.body.customApiKey
 
         const count = parseInt(questionCount) || 5
 
@@ -24,7 +25,8 @@ async function generateInterViewReportController(req, res) {
             resume: resumeText,
             selfDescription,
             jobDescription,
-            questionCount: count
+            questionCount: count,
+            customApiKey
         })
 
         console.log("💾 [Backend] Saving generated interview report to MongoDB...")
@@ -57,6 +59,7 @@ async function generateInterViewReportController(req, res) {
 async function generateMoreQuestionsController(req, res) {
     const { interviewId } = req.params
     const { count = 5, mode = "replace" } = req.body
+    const customApiKey = req.headers["x-gemini-api-key"] || req.body.customApiKey
 
     const interviewReport = await interviewReportModel.findOne({ _id: interviewId, user: req.user.id })
 
@@ -74,7 +77,8 @@ async function generateMoreQuestionsController(req, res) {
         resume,
         selfDescription,
         jobDescription,
-        count: parseInt(count) || 5
+        count: parseInt(count) || 5,
+        customApiKey
     })
 
     if (mode === "append") {

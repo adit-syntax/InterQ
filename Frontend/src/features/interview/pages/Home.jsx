@@ -30,7 +30,18 @@ const Home = () => {
     }
 
     const [ questionCount, setQuestionCount ] = useState(5)
+    const [ customApiKey, setCustomApiKey ] = useState(localStorage.getItem("interq_custom_api_key") || "")
     const [ errorMsg, setErrorMsg ] = useState("")
+
+    const handleApiKeyChange = (e) => {
+        const val = e.target.value
+        setCustomApiKey(val)
+        if (val.trim()) {
+            localStorage.setItem("interq_custom_api_key", val.trim())
+        } else {
+            localStorage.removeItem("interq_custom_api_key")
+        }
+    }
 
     const handleGenerateReport = async () => {
         setErrorMsg("")
@@ -174,20 +185,44 @@ const Home = () => {
 
                 {/* Card Footer */}
                 <div className='interview-card__footer'>
-                    <div className='question-count-selector'>
-                        <label htmlFor='questionCountSelect'>Questions Count:</label>
-                        <select
-                            id='questionCountSelect'
-                            value={questionCount}
-                            onChange={(e) => setQuestionCount(Number(e.target.value))}
-                            className='count-dropdown'
-                        >
-                            <option value={5}>5 Questions</option>
-                            <option value={10}>10 Questions</option>
-                            <option value={15}>15 Questions</option>
-                            <option value={20}>20 Questions</option>
-                            <option value={25}>25 Questions</option>
-                        </select>
+                    <div className='options-row' style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', width: '100%', marginBottom: '1rem' }}>
+                        <div className='question-count-selector'>
+                            <label htmlFor='questionCountSelect'>Questions Count:</label>
+                            <select
+                                id='questionCountSelect'
+                                value={questionCount}
+                                onChange={(e) => setQuestionCount(Number(e.target.value))}
+                                className='count-dropdown'
+                            >
+                                <option value={5}>5 Questions</option>
+                                <option value={10}>10 Questions</option>
+                                <option value={15}>15 Questions</option>
+                                <option value={20}>20 Questions</option>
+                                <option value={25}>25 Questions</option>
+                            </select>
+                        </div>
+
+                        <div className='api-key-selector' style={{ flex: '1', minWidth: '220px' }}>
+                            <label htmlFor='customApiKeyInput' style={{ fontSize: '0.85rem', color: '#94a3b8', display: 'block', marginBottom: '0.3rem' }}>
+                                🔑 Custom Gemini API Key <span style={{ opacity: 0.7 }}>(Optional)</span>:
+                            </label>
+                            <input
+                                id='customApiKeyInput'
+                                type='password'
+                                value={customApiKey}
+                                onChange={handleApiKeyChange}
+                                placeholder='AIzaSy...'
+                                style={{
+                                    width: '100%',
+                                    padding: '0.5rem 0.75rem',
+                                    borderRadius: '0.5rem',
+                                    background: 'rgba(255, 255, 255, 0.05)',
+                                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                                    color: '#f8fafc',
+                                    fontSize: '0.85rem'
+                                }}
+                            />
+                        </div>
                     </div>
 
                     {errorMsg && <div className='error-banner' style={{ color: '#ff2d78', background: 'rgba(255, 45, 120, 0.1)', padding: '0.75rem 1rem', borderRadius: '0.5rem', marginBottom: '1rem', border: '1px solid rgba(255, 45, 120, 0.3)', fontSize: '0.9rem' }}>{errorMsg}</div>}

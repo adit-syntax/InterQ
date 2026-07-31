@@ -3,10 +3,10 @@ const { z } = require("zod")
 const { zodToJsonSchema } = require("zod-to-json-schema")
 const puppeteer = require("puppeteer")
 
-const ai = new GoogleGenAI({
-    apiKey: process.env.GOOGLE_GENAI_API_KEY
-})
-
+function getAiClient(customApiKey) {
+    const key = customApiKey && customApiKey.trim() !== "" ? customApiKey.trim() : process.env.GOOGLE_GENAI_API_KEY
+    return new GoogleGenAI({ apiKey: key })
+}
 
 const interviewReportSchema = z.object({
     matchScore: z.number().describe("A score between 0 and 100 indicating how well the candidate's profile matches the job describe"),
@@ -32,7 +32,7 @@ const interviewReportSchema = z.object({
     title: z.string().describe("The title of the job for which the interview report is generated"),
 })
 
-async function generateInterviewReport({ resume, selfDescription, jobDescription, questionCount = 5 }) {
+async function generateInterviewReport({ resume, selfDescription, jobDescription, questionCount = 5, customApiKey }) {
 
 
     const prompt = `Generate an interview report for a candidate with the following details:
@@ -43,7 +43,9 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
                         IMPORTANT: Generate exactly ${questionCount} technicalQuestions and ${questionCount} behavioralQuestions in the array.
 `
 
-    const response = await ai.models.generateContent({
+    const aiClient = getAiClient(customApiKey)
+
+    const response = await aiClient.models.generateContent({
         model: "gemini-1.5-flash",
         contents: prompt,
         config: {
@@ -70,7 +72,7 @@ const moreQuestionsSchema = z.object({
     })).describe("Behavioral questions that can be asked in the interview")
 })
 
-async function generateMoreQuestions({ resume, selfDescription, jobDescription, count = 5 }) {
+async function generateMoreQuestions({ resume, selfDescription, jobDescription, count = 5, customApiKey }) {
     const prompt = `Generate additional fresh, unique interview questions for a candidate:
                         Resume: ${resume}
                         Self Description: ${selfDescription}
@@ -79,7 +81,9 @@ async function generateMoreQuestions({ resume, selfDescription, jobDescription, 
                         Generate exactly ${count} technicalQuestions and ${count} behavioralQuestions that are unique, realistic, and tailored for this role.
 `
 
-    const response = await ai.models.generateContent({
+    const aiClient = getAiClient(customApiKey)
+
+    const response = await aiClient.models.generateContent({
         model: "gemini-1.5-flash",
         contents: prompt,
         config: {

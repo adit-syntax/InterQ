@@ -10,6 +10,10 @@ api.interceptors.request.use((config) => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`
     }
+    const customKey = localStorage.getItem("interq_custom_api_key")
+    if (customKey) {
+        config.headers["x-gemini-api-key"] = customKey
+    }
     return config
 })
 
