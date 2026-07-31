@@ -502,7 +502,6 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     }
 }
 
-// ── Loading Screen ────────────────────────────────────────────────────────────
 .loading-screen {
     width: 100%;
     min-height: 100vh;
@@ -510,51 +509,156 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 2rem;
 
-    .loading-content {
+    .loading-card {
+        background: $bg-card;
+        border: 1px solid $border-color;
+        border-radius: 1.25rem;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 540px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        text-align: center;
+        gap: 1.2rem;
 
-        .loading-spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid rgba($accent, 0.15);
-            border-top-color: $accent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+
+            .app-logo {
+                width: 28px;
+                height: 28px;
+                border-radius: 6px;
+            }
+
+            .app-brand-name {
+                font-size: 1rem;
+                font-weight: 800;
+                color: $text-primary;
+            }
         }
 
-        h1 {
-            font-size: 1.5rem;
-            color: $text-primary;
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
             margin: 0;
+            color: $text-primary;
         }
 
-        p {
-            font-size: 0.9rem;
+        .loading-sub {
+            font-size: 0.85rem;
             color: $text-muted;
             margin: 0;
         }
 
+        .percentage-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-top: 0.5rem;
+
+            .percentage-num {
+                font-size: 2.5rem;
+                font-weight: 800;
+                color: $accent;
+                line-height: 1;
+            }
+
+            .live-badge {
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: #00f2fe;
+                letter-spacing: 0.05em;
+                animation: pulseProgress 1.5s infinite;
+            }
+        }
+
         .progress-bar-container {
-            width: 320px;
-            height: 6px;
-            background-color: rgba($accent, 0.15);
-            border-radius: 4px;
+            width: 100%;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.06);
+            border-radius: 6px;
             overflow: hidden;
-            position: relative;
 
             .progress-bar-fill {
                 height: 100%;
-                width: 45%;
-                background: linear-gradient(90deg, transparent 0%, $accent 50%, $accent-alt 100%);
-                border-radius: 4px;
-                position: absolute;
-                left: -45%;
-                animation: smoothSlide 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                background: linear-gradient(90deg, #ff2d78 0%, #00f2fe 100%);
+                border-radius: 6px;
+                transition: width 0.4s ease-out;
+            }
+        }
+
+        .loading-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+
+            .step-item {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.6rem 0.85rem;
+                border-radius: 0.6rem;
+                font-size: 0.85rem;
+                transition: all 0.3s ease;
+
+                .step-icon {
+                    width: 22px;
+                    height: 22px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 0.85rem;
+                    border-radius: 50%;
+                }
+
+                .step-title {
+                    flex: 1;
+                    font-weight: 500;
+                }
+
+                &.completed {
+                    background: rgba(0, 242, 254, 0.06);
+                    color: $text-primary;
+
+                    .step-icon {
+                        background: rgba(0, 242, 254, 0.2);
+                        color: #00f2fe;
+                        font-weight: 800;
+                    }
+                }
+
+                &.active {
+                    background: rgba(255, 45, 120, 0.12);
+                    border: 1px solid rgba(255, 45, 120, 0.3);
+                    color: #ffffff;
+
+                    .step-icon {
+                        background: rgba(255, 45, 120, 0.3);
+                        color: $accent;
+                    }
+
+                    .step-pulse {
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 50%;
+                        background-color: $accent;
+                        animation: pulseProgress 1s infinite;
+                    }
+                }
+
+                &.pending {
+                    opacity: 0.4;
+                    color: $text-muted;
+
+                    .step-icon {
+                        background: rgba(255, 255, 255, 0.05);
+                    }
+                }
             }
         }
     }
@@ -564,17 +668,8 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     to { transform: rotate(360deg); }
 }
 
-@keyframes smoothSlide {
-    0% {
-        left: -45%;
-    }
-    100% {
-        left: 100%;
-    }
-}
-
 @keyframes pulseProgress {
-    0% { opacity: 0.8; }
+    0% { opacity: 0.5; }
     50% { opacity: 1; }
-    100% { opacity: 0.8; }
+    100% { opacity: 0.5; }
 }

@@ -1,7 +1,77 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
 import { useNavigate } from 'react-router'
+
+const LoadingOverlay = ({ selectedFile, questionCount }) => {
+    const [ stage, setStage ] = useState(0)
+    const [ progress, setProgress ] = useState(12)
+
+    const stages = [
+        { title: selectedFile ? `Parsing Resume (${selectedFile.name})` : "Parsing Candidate Profile Data", icon: "📄" },
+        { title: "Analyzing Target Job Requirements", icon: "🎯" },
+        { title: `Gemini AI Crafting ${questionCount} Custom Questions`, icon: "🤖" },
+        { title: "Assessing Skill Gaps & Match Score", icon: "📊" },
+        { title: "Building Day-by-Day Preparation Roadmap", icon: "🗓️" },
+        { title: "Finalizing Strategy Studio", icon: "✨" }
+    ]
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setProgress(prev => {
+                if (prev >= 96) return 96
+                return prev + Math.floor(Math.random() * 7) + 3
+            })
+        }, 550)
+
+        return () => clearInterval(interval)
+    }, [])
+
+    useEffect(() => {
+        if (progress > 82) setStage(5)
+        else if (progress > 66) setStage(4)
+        else if (progress > 48) setStage(3)
+        else if (progress > 30) setStage(2)
+        else if (progress > 14) setStage(1)
+        else setStage(0)
+    }, [ progress ])
+
+    return (
+        <main className='loading-screen'>
+            <div className='loading-card'>
+                <div className='brand-header'>
+                    <img src='/logo.png' alt='InterQ Logo' className='app-logo' />
+                    <span className='app-brand-name'>Inter<span className='highlight'>Q</span> AI Studio</span>
+                </div>
+
+                <h2>Building Your Interview Strategy...</h2>
+                <p className='loading-sub'>AI analyzing candidate profile compatibility against target position requirements.</p>
+
+                {/* Animated Percentage Gauge */}
+                <div className='percentage-display'>
+                    <span className='percentage-num'>{progress}%</span>
+                    <span className='live-badge'>● LIVE AI PROCESSING</span>
+                </div>
+
+                {/* Smooth Progress Bar */}
+                <div className='progress-bar-container'>
+                    <div className='progress-bar-fill' style={{ width: `${progress}%` }} />
+                </div>
+
+                {/* Live Steps List */}
+                <div className='loading-steps'>
+                    {stages.map((s, idx) => (
+                        <div key={idx} className={`step-item ${idx < stage ? 'completed' : idx === stage ? 'active' : 'pending'}`}>
+                            <span className='step-icon'>{idx < stage ? '✓' : s.icon}</span>
+                            <span className='step-title'>{s.title}</span>
+                            {idx === stage && <span className='step-pulse' />}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </main>
+    )
+}
 
 const Home = () => {
 
@@ -68,18 +138,7 @@ const Home = () => {
     }
 
     if (loading) {
-        return (
-            <main className='loading-screen'>
-                <div className='loading-content'>
-                    <div className='loading-spinner' />
-                    <h1>Analyzing &amp; Generating Your Plan...</h1>
-                    <p>{selectedFile ? `Uploading "${selectedFile.name}" and analyzing...` : "Processing your profile..."}</p>
-                    <div className='progress-bar-container'>
-                        <div className='progress-bar-fill' />
-                    </div>
-                </div>
-            </main>
-        )
+        return <LoadingOverlay selectedFile={selectedFile} questionCount={questionCount} />
     }
 
     return (
