@@ -1,4 +1,27 @@
 const pdfParse = require("pdf-parse")
+
+async function extractPdfText(buffer) {
+    if (!buffer) return ""
+    try {
+        if (pdfParse?.PDFParse) {
+            const parser = new pdfParse.PDFParse(new Uint8Array(buffer))
+            const result = await parser.getText()
+            return result?.text || ""
+        }
+        if (typeof pdfParse === "function") {
+            const result = await pdfParse(buffer)
+            return result?.text || ""
+        }
+        if (typeof pdfParse?.default === "function") {
+            const result = await pdfParse.default(buffer)
+            return result?.text || ""
+        }
+    } catch (err) {
+        console.error("📄 [Backend] PDF text extraction warning:", err.message)
+    }
+    return ""
+}
+
 const { generateInterviewReport, generateResumePdf, generateMoreQuestions } = require("../services/ai.service")
 const interviewReportModel = require("../models/interviewReport.model")
 
@@ -10,8 +33,7 @@ async function generateInterViewReportController(req, res) {
         let resumeText = ""
         if (req.file) {
             console.log("📄 [Backend] Parsing uploaded resume PDF...")
-            const resumeContent = await pdfParse(req.file.buffer)
-            resumeText = resumeContent.text
+            resumeText = await extractPdfText(req.file.buffer)
         }
 
         const { selfDescription, jobDescription, questionCount } = req.body
