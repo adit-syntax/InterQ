@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import '../style/interview.scss'
 import { useInterview } from '../hooks/useInterview.js'
 import { useNavigate, useParams } from 'react-router'
+import Navbar from '../../../components/Navbar'
 
 
 
@@ -91,6 +92,9 @@ const Interview = () => {
 
     return (
         <div className='interview-page'>
+            <div style={{ width: '100%', marginBottom: '1.5rem' }}>
+                <Navbar />
+            </div>
             <div className='interview-layout'>
 
                 {/* ── Left Nav ── */}
