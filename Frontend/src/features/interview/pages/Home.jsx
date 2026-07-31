@@ -43,6 +43,11 @@ const Home = () => {
         }
     }
 
+    const clearApiKey = () => {
+        setCustomApiKey("")
+        localStorage.removeItem("interq_custom_api_key")
+    }
+
     const handleGenerateReport = async () => {
         setErrorMsg("")
         const resumeFile = selectedFile || resumeInputRef.current?.files[0]
@@ -54,7 +59,11 @@ const Home = () => {
                 setErrorMsg("Failed to generate report. Please try again.")
             }
         } catch (err) {
-            setErrorMsg(err.message || "An error occurred while generating your interview plan.")
+            let msg = err.message || "An error occurred while generating your interview plan."
+            if (msg.includes("API key not valid") || msg.includes("API_KEY_INVALID")) {
+                msg = "Invalid Gemini API key provided. Please clear the input to use the server key, or get a valid key from https://aistudio.google.com/app/apikey"
+            }
+            setErrorMsg(msg)
         }
     }
 
@@ -203,9 +212,28 @@ const Home = () => {
                         </div>
 
                         <div className='api-key-selector' style={{ flex: '1', minWidth: '220px' }}>
-                            <label htmlFor='customApiKeyInput' style={{ fontSize: '0.85rem', color: '#94a3b8', display: 'block', marginBottom: '0.3rem' }}>
-                                🔑 Custom Gemini API Key <span style={{ opacity: 0.7 }}>(Optional)</span>:
-                            </label>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
+                                <label htmlFor='customApiKeyInput' style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                                    🔑 Custom Gemini API Key <span style={{ opacity: 0.7 }}>(Optional)</span>:
+                                </label>
+                                {customApiKey && (
+                                    <button
+                                        type='button'
+                                        onClick={clearApiKey}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            color: '#ff2d78',
+                                            fontSize: '0.75rem',
+                                            cursor: 'pointer',
+                                            textDecoration: 'underline',
+                                            padding: 0
+                                        }}
+                                    >
+                                        ✕ Clear Key
+                                    </button>
+                                )}
+                            </div>
                             <input
                                 id='customApiKeyInput'
                                 type='password'
