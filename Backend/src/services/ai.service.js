@@ -49,7 +49,7 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
             console.log("🔑 [Backend] Attempting generation with user's custom Gemini API key...")
             const customClient = new GoogleGenAI({ apiKey: customApiKey.trim() })
             response = await customClient.models.generateContent({
-                model: "gemini-1.5-flash",
+                model: "gemini-flash-latest",
                 contents: prompt,
                 config: {
                     responseMimeType: "application/json",
@@ -66,7 +66,7 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
         console.log("⚡ [Backend] Generating using server default GOOGLE_GENAI_API_KEY...")
         const serverClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENAI_API_KEY })
         response = await serverClient.models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "gemini-flash-latest",
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -108,7 +108,7 @@ async function generateMoreQuestions({ resume, selfDescription, jobDescription, 
             console.log("🔑 [Backend] Refreshing questions with user's custom Gemini API key...")
             const customClient = new GoogleGenAI({ apiKey: customApiKey.trim() })
             response = await customClient.models.generateContent({
-                model: "gemini-1.5-flash",
+                model: "gemini-flash-latest",
                 contents: prompt,
                 config: {
                     responseMimeType: "application/json",
@@ -125,7 +125,7 @@ async function generateMoreQuestions({ resume, selfDescription, jobDescription, 
         console.log("⚡ [Backend] Refreshing questions using server default GOOGLE_GENAI_API_KEY...")
         const serverClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENAI_API_KEY })
         response = await serverClient.models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "gemini-flash-latest",
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
