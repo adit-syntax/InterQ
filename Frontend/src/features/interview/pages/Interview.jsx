@@ -92,9 +92,7 @@ const Interview = () => {
 
     return (
         <div className='interview-page'>
-            <div style={{ width: '100%', marginBottom: '1.5rem' }}>
-                <Navbar />
-            </div>
+            <Navbar />
             <div className='interview-layout'>
 
                 {/* ── Left Nav ── */}
