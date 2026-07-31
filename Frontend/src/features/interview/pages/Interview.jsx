@@ -79,8 +79,20 @@ const Interview = () => {
 
     if (loading || !report) {
         return (
-            <main className='loading-screen'>
-                <h1>Loading your interview plan...</h1>
+            <main className='loading-screen' style={{ flexDirection: 'column', gap: '2rem' }}>
+                <Navbar />
+                <div style={{ margin: 'auto', textAlign: 'center' }}>
+                    <div style={{
+                        width: '40px',
+                        height: '40px',
+                        border: '3px solid rgba(255, 45, 120, 0.2)',
+                        borderTopColor: '#ff2d78',
+                        borderRadius: '50%',
+                        margin: '0 auto 1rem auto',
+                        animation: 'spin 1s linear infinite'
+                    }} />
+                    <h2 style={{ color: '#e6edf3', fontSize: '1.2rem', fontWeight: 600 }}>Loading your interview strategy...</h2>
+                </div>
             </main>
         )
     }

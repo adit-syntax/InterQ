@@ -32,15 +32,14 @@ export const useInterview = () => {
     const refreshQuestions = async ({ count = 5, mode = "replace" }) => {
         const targetId = interviewId || report?._id
         if (!targetId) return null
-        setLoading(true)
         let response = null
         try {
             response = await fetchMoreQuestions({ interviewReportId: targetId, count, mode })
-            setReport(response.interviewReport)
+            if (response?.interviewReport) {
+                setReport(response.interviewReport)
+            }
         } catch (error) {
             console.log(error)
-        } finally {
-            setLoading(false)
         }
         return response?.interviewReport
     }
