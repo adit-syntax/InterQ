@@ -35,12 +35,15 @@ const interviewReportSchema = z.object({
 async function generateInterviewReport({ resume, selfDescription, jobDescription, questionCount = 5, customApiKey }) {
 
 
-    const prompt = `Generate an interview report for a candidate with the following details:
+    const prompt = `Generate a high-quality interview strategy report for a candidate:
                         Resume: ${resume}
                         Self Description: ${selfDescription}
                         Job Description: ${jobDescription}
 
-                        IMPORTANT: Generate exactly ${questionCount} technicalQuestions and ${questionCount} behavioralQuestions in the array.
+                        CRITICAL INSTRUCTIONS FOR FAST HIGH-QUALITY RESPONSE:
+                        1. Generate exactly ${questionCount} technicalQuestions and ${questionCount} behavioralQuestions in the array.
+                        2. Keep each answer and intention crisp, punchy, and direct (2-3 concise bullet points / key lines per answer). Avoid unnecessary fluff.
+                        3. Keep skill gap descriptions and day-wise tasks direct, actionable, and structured.
 `
 
     let response
@@ -100,6 +103,7 @@ async function generateMoreQuestions({ resume, selfDescription, jobDescription, 
                         Job Description: ${jobDescription}
 
                         Generate exactly ${count} technicalQuestions and ${count} behavioralQuestions that are unique, realistic, and tailored for this role.
+                        Keep each answer and intention crisp, punchy, and direct (2-3 concise key points per answer).
 `
 
     let response
