@@ -21,7 +21,8 @@ const LoadingOverlay = ({ selectedFile, questionCount }) => {
         const interval = setInterval(() => {
             setProgress(prev => {
                 if (prev >= 96) return 96
-                return prev + Math.floor(Math.random() * 7) + 3
+                const next = prev + Math.floor(Math.random() * 5) + 2
+                return Math.min(96, next)
             })
         }, 550)
 
