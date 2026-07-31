@@ -43,16 +43,37 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
                         IMPORTANT: Generate exactly ${questionCount} technicalQuestions and ${questionCount} behavioralQuestions in the array.
 `
 
-    const aiClient = getAiClient(customApiKey)
-
-    const response = await aiClient.models.generateContent({
-        model: "gemini-1.5-flash",
-        contents: prompt,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: zodToJsonSchema(interviewReportSchema),
+    let response
+    if (customApiKey && customApiKey.trim()) {
+        try {
+            console.log("🔑 [Backend] Attempting generation with user's custom Gemini API key...")
+            const customClient = new GoogleGenAI({ apiKey: customApiKey.trim() })
+            response = await customClient.models.generateContent({
+                model: "gemini-1.5-flash",
+                contents: prompt,
+                config: {
+                    responseMimeType: "application/json",
+                    responseSchema: zodToJsonSchema(interviewReportSchema),
+                }
+            })
+        } catch (err) {
+            console.warn("⚠️ [Backend] Custom API key failed. Falling back to server API key:", err.message)
+            response = null
         }
-    })
+    }
+
+    if (!response) {
+        console.log("⚡ [Backend] Generating using server default GOOGLE_GENAI_API_KEY...")
+        const serverClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENAI_API_KEY })
+        response = await serverClient.models.generateContent({
+            model: "gemini-1.5-flash",
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: zodToJsonSchema(interviewReportSchema),
+            }
+        })
+    }
 
     return JSON.parse(response.text)
 
@@ -81,16 +102,37 @@ async function generateMoreQuestions({ resume, selfDescription, jobDescription, 
                         Generate exactly ${count} technicalQuestions and ${count} behavioralQuestions that are unique, realistic, and tailored for this role.
 `
 
-    const aiClient = getAiClient(customApiKey)
-
-    const response = await aiClient.models.generateContent({
-        model: "gemini-1.5-flash",
-        contents: prompt,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: zodToJsonSchema(moreQuestionsSchema),
+    let response
+    if (customApiKey && customApiKey.trim()) {
+        try {
+            console.log("🔑 [Backend] Refreshing questions with user's custom Gemini API key...")
+            const customClient = new GoogleGenAI({ apiKey: customApiKey.trim() })
+            response = await customClient.models.generateContent({
+                model: "gemini-1.5-flash",
+                contents: prompt,
+                config: {
+                    responseMimeType: "application/json",
+                    responseSchema: zodToJsonSchema(moreQuestionsSchema),
+                }
+            })
+        } catch (err) {
+            console.warn("⚠️ [Backend] Custom API key failed. Falling back to server API key:", err.message)
+            response = null
         }
-    })
+    }
+
+    if (!response) {
+        console.log("⚡ [Backend] Refreshing questions using server default GOOGLE_GENAI_API_KEY...")
+        const serverClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENAI_API_KEY })
+        response = await serverClient.models.generateContent({
+            model: "gemini-1.5-flash",
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: zodToJsonSchema(moreQuestionsSchema),
+            }
+        })
+    }
 
     return JSON.parse(response.text)
 }
