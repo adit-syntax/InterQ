@@ -119,8 +119,11 @@ const Home = () => {
         localStorage.removeItem("interq_custom_api_key")
     }
 
+    const [ isGenerating, setIsGenerating ] = useState(false)
+
     const handleGenerateReport = async () => {
         setErrorMsg("")
+        setIsGenerating(true)
         const resumeFile = selectedFile || resumeInputRef.current?.files[0]
         try {
             const data = await generateReport({ jobDescription, selfDescription, resumeFile, questionCount })
@@ -135,10 +138,12 @@ const Home = () => {
                 msg = "Invalid Gemini API key provided. Please clear the input to use the server key, or get a valid key from https://aistudio.google.com/app/apikey"
             }
             setErrorMsg(msg)
+        } finally {
+            setIsGenerating(false)
         }
     }
 
-    if (loading) {
+    if (isGenerating) {
         return <LoadingOverlay selectedFile={selectedFile} questionCount={questionCount} />
     }
 
