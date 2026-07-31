@@ -17,17 +17,16 @@ export const useInterview = () => {
 
     const generateReport = async ({ jobDescription, selfDescription, resumeFile, questionCount = 5 }) => {
         setLoading(true)
-        let response = null
         try {
-            response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile, questionCount })
+            const response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile, questionCount })
             setReport(response.interviewReport)
+            return response.interviewReport
         } catch (error) {
-            console.log(error)
+            const msg = error.response?.data?.message || error.message || "Failed to generate interview report."
+            throw new Error(msg)
         } finally {
             setLoading(false)
         }
-
-        return response?.interviewReport
     }
 
     const refreshQuestions = async ({ count = 5, mode = "replace" }) => {
