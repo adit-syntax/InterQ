@@ -32,6 +32,34 @@ const interviewReportSchema = z.object({
     title: z.string().describe("The title of the job for which the interview report is generated"),
 })
 
+async function callGeminiWithFallback({ apiKey, prompt, schema }) {
+    const client = new GoogleGenAI({ apiKey })
+    const candidateModels = ["gemini-flash-latest", "gemini-2.0-flash-lite", "gemini-2.0-flash", "gemini-1.5-flash"]
+    let lastError = null
+
+    for (const model of candidateModels) {
+        try {
+            console.log(`🤖 [Backend] Attempting generation with model: ${model}`)
+            const response = await client.models.generateContent({
+                model,
+                contents: prompt,
+                config: {
+                    temperature: 0.1,
+                    responseMimeType: "application/json",
+                    responseSchema: zodToJsonSchema(schema),
+                }
+            })
+            if (response && response.text) {
+                return response
+            }
+        } catch (err) {
+            console.warn(`⚠️ [Backend] Model ${model} failed (${err.message}). Trying next fallback model...`)
+            lastError = err
+        }
+    }
+    throw lastError
+}
+
 async function generateInterviewReport({ resume, selfDescription, jobDescription, questionCount = 5, customApiKey }) {
 
 
@@ -50,15 +78,10 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
     if (customApiKey && customApiKey.trim()) {
         try {
             console.log("🔑 [Backend] Attempting generation with user's custom Gemini API key...")
-            const customClient = new GoogleGenAI({ apiKey: customApiKey.trim() })
-            response = await customClient.models.generateContent({
-                model: "gemini-flash-latest",
-                contents: prompt,
-                config: {
-                    temperature: 0.1,
-                    responseMimeType: "application/json",
-                    responseSchema: zodToJsonSchema(interviewReportSchema),
-                }
+            response = await callGeminiWithFallback({
+                apiKey: customApiKey.trim(),
+                prompt,
+                schema: interviewReportSchema
             })
         } catch (err) {
             console.warn("⚠️ [Backend] Custom API key failed. Falling back to server API key:", err.message)
@@ -68,15 +91,10 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
 
     if (!response) {
         console.log("⚡ [Backend] Generating using server default GOOGLE_GENAI_API_KEY...")
-        const serverClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENAI_API_KEY })
-        response = await serverClient.models.generateContent({
-            model: "gemini-flash-latest",
-            contents: prompt,
-            config: {
-                temperature: 0.1,
-                responseMimeType: "application/json",
-                responseSchema: zodToJsonSchema(interviewReportSchema),
-            }
+        response = await callGeminiWithFallback({
+            apiKey: process.env.GOOGLE_GENAI_API_KEY,
+            prompt,
+            schema: interviewReportSchema
         })
     }
 
@@ -116,14 +134,10 @@ async function generateMoreQuestions({ resume, selfDescription, jobDescription, 
     if (customApiKey && customApiKey.trim()) {
         try {
             console.log("🔑 [Backend] Refreshing questions with user's custom Gemini API key...")
-            const customClient = new GoogleGenAI({ apiKey: customApiKey.trim() })
-            response = await customClient.models.generateContent({
-                model: "gemini-flash-latest",
-                contents: prompt,
-                config: {
-                    responseMimeType: "application/json",
-                    responseSchema: zodToJsonSchema(moreQuestionsSchema),
-                }
+            response = await callGeminiWithFallback({
+                apiKey: customApiKey.trim(),
+                prompt,
+                schema: moreQuestionsSchema
             })
         } catch (err) {
             console.warn("⚠️ [Backend] Custom API key failed. Falling back to server API key:", err.message)
@@ -133,14 +147,10 @@ async function generateMoreQuestions({ resume, selfDescription, jobDescription, 
 
     if (!response) {
         console.log("⚡ [Backend] Refreshing questions using server default GOOGLE_GENAI_API_KEY...")
-        const serverClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENAI_API_KEY })
-        response = await serverClient.models.generateContent({
-            model: "gemini-flash-latest",
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: zodToJsonSchema(moreQuestionsSchema),
-            }
+        response = await callGeminiWithFallback({
+            apiKey: process.env.GOOGLE_GENAI_API_KEY,
+            prompt,
+            schema: moreQuestionsSchema
         })
     }
 

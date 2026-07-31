@@ -136,6 +136,8 @@ const Home = () => {
             let msg = err.message || "An error occurred while generating your interview plan."
             if (msg.includes("API key not valid") || msg.includes("API_KEY_INVALID")) {
                 msg = "Invalid Gemini API key provided. Please clear the input to use the server key, or get a valid key from https://aistudio.google.com/app/apikey"
+            } else if (msg.includes("429") || msg.includes("RESOURCE_EXHAUSTED") || msg.includes("quota")) {
+                msg = "Gemini API free tier rate limit reached. Please wait 20 seconds and try again, or click 'Clear Key'."
             }
             setErrorMsg(msg)
         } finally {
