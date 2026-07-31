@@ -14,9 +14,14 @@ export const useAuth = () => {
         setLoading(true)
         try {
             const data = await login({ email, password })
-            setUser(data.user)
+            if (data?.token) {
+                localStorage.setItem("interq_token", data.token)
+            }
+            if (data?.user) {
+                setUser(data.user)
+            }
         } catch (err) {
-
+            console.log(err)
         } finally {
             setLoading(false)
         }
@@ -26,9 +31,14 @@ export const useAuth = () => {
         setLoading(true)
         try {
             const data = await register({ username, email, password })
-            setUser(data.user)
+            if (data?.token) {
+                localStorage.setItem("interq_token", data.token)
+            }
+            if (data?.user) {
+                setUser(data.user)
+            }
         } catch (err) {
-
+            console.log(err)
         } finally {
             setLoading(false)
         }
@@ -37,10 +47,11 @@ export const useAuth = () => {
     const handleLogout = async () => {
         setLoading(true)
         try {
-            const data = await logout()
+            await logout()
+            localStorage.removeItem("interq_token")
             setUser(null)
         } catch (err) {
-
+            console.log(err)
         } finally {
             setLoading(false)
         }
