@@ -34,10 +34,10 @@ const Home = () => {
     const [ errorMsg, setErrorMsg ] = useState("")
 
     const handleApiKeyChange = (e) => {
-        const val = e.target.value
+        const val = e.target.value.replace(/[^a-zA-Z0-9_\-]/g, "").trim()
         setCustomApiKey(val)
-        if (val.trim()) {
-            localStorage.setItem("interq_custom_api_key", val.trim())
+        if (val) {
+            localStorage.setItem("interq_custom_api_key", val)
         } else {
             localStorage.removeItem("interq_custom_api_key")
         }
