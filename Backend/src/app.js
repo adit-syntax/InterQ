@@ -23,7 +23,8 @@ app.use(cors({
             callback(null, true)
         }
     },
-    credentials: true
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization", "x-gemini-api-key"]
 }))
 
 // Request Logging Middleware

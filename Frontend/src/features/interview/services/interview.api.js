@@ -31,6 +31,11 @@ export const generateInterviewReport = async ({ jobDescription, selfDescription,
     }
     formData.append("questionCount", questionCount)
 
+    const customKey = localStorage.getItem("interq_custom_api_key")
+    if (customKey) {
+        formData.append("customApiKey", customKey)
+    }
+
     const response = await api.post("/api/interview/", formData, {
         headers: {
             "Content-Type": "multipart/form-data"
