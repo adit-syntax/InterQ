@@ -96,13 +96,17 @@ const moreQuestionsSchema = z.object({
     })).describe("Behavioral questions that can be asked in the interview")
 })
 
-async function generateMoreQuestions({ resume, selfDescription, jobDescription, count = 5, customApiKey }) {
-    const prompt = `Generate additional fresh, unique interview questions for a candidate:
+async function generateMoreQuestions({ resume, selfDescription, jobDescription, count = 5, customApiKey, existingQuestions = [] }) {
+    const excludeText = existingQuestions.length > 0
+        ? `\nDO NOT REPEAT OR REPHRASE ANY OF THESE PREVIOUSLY ASKED QUESTIONS:\n${existingQuestions.map((q, i) => `${i + 1}. ${q}`).join("\n")}\n`
+        : ""
+
+    const prompt = `Generate additional fresh, 100% unique interview questions for a candidate:
                         Resume: ${resume}
                         Self Description: ${selfDescription}
                         Job Description: ${jobDescription}
-
-                        Generate exactly ${count} technicalQuestions and ${count} behavioralQuestions that are unique, realistic, and tailored for this role.
+                        ${excludeText}
+                        Generate exactly ${count} technicalQuestions and ${count} behavioralQuestions that are COMPLETELY NEW, unique, realistic, and tailored for this role.
                         Keep each answer and intention crisp, punchy, and direct (2-3 concise key points per answer).
 `
 

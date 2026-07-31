@@ -93,14 +93,20 @@ async function generateMoreQuestionsController(req, res) {
 
     const { resume, selfDescription, jobDescription } = interviewReport
 
-    console.log(`🔄 [Backend] Generating ${count} new questions via Gemini AI...`)
+    const existingQuestions = [
+        ...(interviewReport.technicalQuestions || []).map(q => q.question),
+        ...(interviewReport.behavioralQuestions || []).map(q => q.question)
+    ]
+
+    console.log(`🔄 [Backend] Generating ${count} new unique questions via Gemini AI...`)
 
     const newQuestions = await generateMoreQuestions({
         resume,
         selfDescription,
         jobDescription,
         count: parseInt(count) || 5,
-        customApiKey
+        customApiKey,
+        existingQuestions
     })
 
     if (mode === "append") {
