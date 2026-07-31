@@ -34,7 +34,7 @@ const interviewReportSchema = z.object({
 
 async function callGeminiWithFallback({ apiKey, prompt, schema }) {
     const client = new GoogleGenAI({ apiKey })
-    const candidateModels = ["gemini-flash-latest", "gemini-2.0-flash-lite", "gemini-2.0-flash", "gemini-1.5-flash"]
+    const candidateModels = ["gemini-flash-latest", "gemini-flash-lite-latest", "gemini-2.0-flash-lite", "gemini-2.0-flash"]
     let lastError = null
 
     for (const model of candidateModels) {
